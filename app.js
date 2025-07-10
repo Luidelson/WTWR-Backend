@@ -1,6 +1,9 @@
 const express = require("express");
+
 const mongoose = require("mongoose");
-const mainRouter = require("./routes/users");
+// const mainRouter = require("./routes/users");
+
+// Add an empty line here to satisfy the lint rule
 
 const app = express();
 
@@ -14,14 +17,15 @@ mongoose
   .catch(console.error);
 
 app.use((req, res, next) => {
-  req.user = { _id: "64b7e6e2f1a2c2a1b2c3d4e5" }; // replace with your actual user _id
+  req.user = { _id: "64b7e6e2f1a2c2a1b2c3d4e5" };
   next();
 });
 
-const routes = require("./routes/index");
-app.use("/", routes);
-
 app.use(express.json());
+
+const routes = require("./routes/index");
+
+app.use("/", routes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

@@ -1,11 +1,12 @@
 const User = require("../models/user");
+
 const STATUS_NOT_FOUND = 404;
 const STATUS_BAD_REQUEST = 400;
 const STATUS_INTERNAL_SERVER_ERROR = 500;
 const STATUS_CREATED = 201;
 const STATUS_OK = 200;
 
-//GET .users
+// GET .users
 
 const getUsers = (req, res) => {
   User.find({})
@@ -26,9 +27,7 @@ const createUser = (req, res) => {
       console.error(err);
       console.error(err.name);
       if (err.name === "ValidationError") {
-        res
-          .status(STATUS_BAD_REQUEST)
-          .send({ message: "an Error occured in the server." });
+        res.status(STATUS_BAD_REQUEST).send({ message: "Invalid Data" });
       } else {
         res
           .status(STATUS_INTERNAL_SERVER_ERROR)
@@ -40,6 +39,7 @@ const createUser = (req, res) => {
 const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
+    .orFail()
     .then((user) => res.status(STATUS_OK).send(user))
     .catch((err) => {
       console.error(err);
@@ -47,12 +47,13 @@ const getUser = (req, res) => {
         return res
           .status(STATUS_NOT_FOUND)
           .send({ message: "an Error occured in the server." });
-      } else if (err.name === "CastError") {
+      }
+      if (err.name === "CastError") {
         return res
           .status(STATUS_BAD_REQUEST)
-          .send({ message: "an Error occured in the server." });
+          .send({ message: "Invalid Parameters" });
       }
-      res
+      return res
         .status(STATUS_INTERNAL_SERVER_ERROR)
         .send({ message: "an Error occured in the server." });
     });

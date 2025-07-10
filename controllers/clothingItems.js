@@ -1,73 +1,88 @@
 const ClothingItem = require("../models/clothingItem");
 
-const createItem = (req, res) => {
-  console.log(req);
-  console.log(req.body);
+const STATUS_NOT_FOUND = 404;
+const STATUS_BAD_REQUEST = 400;
+const STATUS_INTERNAL_SERVER_ERROR = 500;
+const STATUS_OK = 200;
 
+const createItem = (req, res) => {
   const { name, weather, imageUrl } = req.body;
   const owner = req.user._id;
 
-  ClothingItem.create({ name, weather, imageUrl, owner })
+  return ClothingItem.create({ name, weather, imageUrl, owner })
     .then((item) => res.send({ data: item }))
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(400).send({ message: "Invalid item data" });
+        return res
+          .status(STATUS_BAD_REQUEST)
+          .send({ message: "Invalid item data" });
       }
-      res.status(500).send({ message: "Error from createItem" });
+      return res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "Error from createItem" });
     });
 };
 
 const likeItem = (req, res) => {
   const { itemId } = req.params;
   const userId = req.user._id;
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     { $addToSet: { likes: userId } },
     { new: true }
   )
     .then((item) => {
       if (!item) {
-        return res.status(404).send({ message: "Item not found" });
+        return res.status(STATUS_NOT_FOUND).send({ message: "Item not found" });
       }
-      res.status(200).send(item);
+      return res.status(STATUS_OK).send(item);
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid item ID" });
+        return res
+          .status(STATUS_BAD_REQUEST)
+          .send({ message: "Invalid item ID" });
       }
-      res.status(500).send({ message: err.message });
+      return res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "An error occurred in the server." });
     });
 };
 
 const unlikeItem = (req, res) => {
   const { itemId } = req.params;
   const userId = req.user._id;
-  ClothingItem.findByIdAndUpdate(
+  return ClothingItem.findByIdAndUpdate(
     itemId,
     { $pull: { likes: userId } },
     { new: true }
   )
     .then((item) => {
       if (!item) {
-        return res.status(404).send({ message: "Item not found" });
+        return res.status(STATUS_NOT_FOUND).send({ message: "Item not found" });
       }
-      res.status(200).send(item);
+      return res.status(STATUS_OK).send(item);
     })
     .catch((err) => {
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid item ID" });
+        return res
+          .status(STATUS_BAD_REQUEST)
+          .send({ message: "Invalid item ID" });
       }
-      res.status(500).send({ message: err.message });
+      return res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "An error occurred in the server." });
     });
 };
 
-const getItems = (req, res) => {
+const getItems = (req, res) =>
   ClothingItem.find({})
-    .then((items) => res.status(200).send(items))
-    .catch((err) => {
-      res.status(500).send({ message: "Error from getItems" });
-    });
-};
+    .then((items) => res.status(STATUS_OK).send(items))
+    .catch(() =>
+      res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "An error occurred in the server." })
+    );
 
 // const updateItem = (req, res) => {
 //   const { itemId } = req.params;
@@ -83,15 +98,11 @@ const getItems = (req, res) => {
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
-
-  console.log(itemId);
-  ClothingItem.findByIdAndDelete(itemId)
+  return ClothingItem.findByIdAndDelete(itemId)
     .orFail()
-    .then((item) => {
-      res
-        .status(200)
-        .send({ message: "Item deleted successfully", data: item });
-    })
+    .then((item) =>
+      res.status(200).send({ message: "Item deleted successfully", data: item })
+    )
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
         return res.status(404).send({ message: "Item not found" });
@@ -99,7 +110,7 @@ const deleteItem = (req, res) => {
       if (err.name === "CastError") {
         return res.status(400).send({ message: "Invalid item ID" });
       }
-      res.status(500).send({ message: "Error from deleteItem" });
+      return res.status(500).send({ message: "Error from deleteItem" });
     });
 };
 
