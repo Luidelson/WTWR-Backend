@@ -1,27 +1,38 @@
 const User = require("../models/user");
+const STATUS_NOT_FOUND = 404;
+const STATUS_BAD_REQUEST = 400;
+const STATUS_INTERNAL_SERVER_ERROR = 500;
+const STATUS_CREATED = 201;
+const STATUS_OK = 200;
 
 //GET .users
 
 const getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(200).send(users))
+    .then((users) => res.status(STATUS_OK).send(users))
     .catch((err) => {
       console.error(err);
-      res.status(500).send({ message: err.message });
+      res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "an Error occured in the server." });
     });
 };
 
 const createUser = (req, res) => {
   const { name, avatar } = req.body;
   User.create({ name, avatar })
-    .then((user) => res.status(201).send(user))
+    .then((user) => res.status(STATUS_CREATED).send(user))
     .catch((err) => {
       console.error(err);
       console.error(err.name);
       if (err.name === "ValidationError") {
-        res.status(400).send({ message: err.message });
+        res
+          .status(STATUS_BAD_REQUEST)
+          .send({ message: "an Error occured in the server." });
       } else {
-        res.status(500).send({ message: "an Error occured in the server." });
+        res
+          .status(STATUS_INTERNAL_SERVER_ERROR)
+          .send({ message: "an Error occured in the server." });
       }
     });
 };
@@ -29,16 +40,21 @@ const createUser = (req, res) => {
 const getUser = (req, res) => {
   const { userId } = req.params;
   User.findById(userId)
-    .then((user) => res.status(200).send(user))
-
+    .then((user) => res.status(STATUS_OK).send(user))
     .catch((err) => {
       console.error(err);
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: err.message });
+        return res
+          .status(STATUS_NOT_FOUND)
+          .send({ message: "an Error occured in the server." });
       } else if (err.name === "CastError") {
-        return res.status(400).send({ message: err.message });
+        return res
+          .status(STATUS_BAD_REQUEST)
+          .send({ message: "an Error occured in the server." });
       }
-      res.status(500).send({ message: err.message });
+      res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "an Error occured in the server." });
     });
 };
 

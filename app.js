@@ -13,11 +13,15 @@ mongoose
   })
   .catch(console.error);
 
+app.use((req, res, next) => {
+  req.user = { _id: "64b7e6e2f1a2c2a1b2c3d4e5" }; // replace with your actual user _id
+  next();
+});
+
 const routes = require("./routes/index");
 app.use("/", routes);
 
 app.use(express.json());
-app.use("/users", mainRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
