@@ -101,16 +101,22 @@ const deleteItem = (req, res) => {
   return ClothingItem.findByIdAndDelete(itemId)
     .orFail()
     .then((item) =>
-      res.status(200).send({ message: "Item deleted successfully", data: item })
+      res
+        .status(STATUS_OK)
+        .send({ message: "Item deleted successfully", data: item })
     )
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
-        return res.status(404).send({ message: "Item not found" });
+        return res.status(STATUS_NOT_FOUND).send({ message: "Item not found" });
       }
       if (err.name === "CastError") {
-        return res.status(400).send({ message: "Invalid item ID" });
+        return res
+          .status(STATUS_BAD_REQUEST)
+          .send({ message: "Invalid item ID" });
       }
-      return res.status(500).send({ message: "Error from deleteItem" });
+      return res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "Error from deleteItem" });
     });
 };
 
