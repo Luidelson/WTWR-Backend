@@ -1,13 +1,14 @@
 const express = require("express");
-
+const cors = require("cors");
 const mongoose = require("mongoose");
-// const mainRouter = require("./routes/users");
-
-// Add an empty line here to satisfy the lint rule
 
 const app = express();
 
 const { PORT = 3001 } = process.env;
+const auth = require("./middlewares/auth");
+const userRouter = require("./routes/users");
+const itemRouter = require("./routes/clothingItems");
+console.log("itemRouter is:", itemRouter);
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
@@ -16,16 +17,20 @@ mongoose
   })
   .catch(console.error);
 
-app.use((req, res, next) => {
-  req.user = { _id: "64b7e6e2f1a2c2a1b2c3d4e5" };
-  next();
-});
-
 app.use(express.json());
+app.use(cors());
 
-const routes = require("./routes/index");
+// Public routes
+app.post("/signin", require("./controllers/users").login);
+app.post("/signup", require("./controllers/users").createUser);
+app.get("/items", require("./controllers/clothingItems").getItems);
 
-app.use("/", routes);
+// Protect all routes below this line
+app.use(auth);
+
+// Protected routes
+app.use("/users", userRouter);
+app.use("/items", itemRouter);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

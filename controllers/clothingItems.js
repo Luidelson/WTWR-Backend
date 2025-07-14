@@ -23,6 +23,48 @@ const createItem = (req, res) => {
     });
 };
 
+const getItems = (req, res) =>
+  ClothingItem.find({})
+    .then((items) => res.status(STATUS_OK).send(items))
+    .catch(() =>
+      res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "An error occurred in the server." })
+    );
+
+const deleteItem = (req, res) => {
+  const { itemId } = req.params;
+  const userId = req.user._id;
+
+  ClothingItem.findById(itemId)
+    .then((item) => {
+      if (!item) {
+        return res.status(STATUS_NOT_FOUND).send({ message: "Item not found" });
+      }
+      // Check if the current user is the owner
+      if (item.owner.toString() !== userId) {
+        return res
+          .status(403)
+          .send({ message: "You are not allowed to delete this item" });
+      }
+      return ClothingItem.findByIdAndDelete(itemId).then((deletedItem) =>
+        res
+          .status(STATUS_OK)
+          .send({ message: "Item deleted successfully", data: deletedItem })
+      );
+    })
+    .catch((err) => {
+      if (err.name === "CastError") {
+        return res
+          .status(STATUS_BAD_REQUEST)
+          .send({ message: "Invalid item ID" });
+      }
+      return res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "Error from deleteItem" });
+    });
+};
+
 const likeItem = (req, res) => {
   const { itemId } = req.params;
   const userId = req.user._id;
@@ -75,55 +117,9 @@ const unlikeItem = (req, res) => {
     });
 };
 
-const getItems = (req, res) =>
-  ClothingItem.find({})
-    .then((items) => res.status(STATUS_OK).send(items))
-    .catch(() =>
-      res
-        .status(STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: "An error occurred in the server." })
-    );
-
-// const updateItem = (req, res) => {
-//   const { itemId } = req.params;
-//   const { imageUrl } = req.body;
-
-//   ClothingItem.findByIdAndUpdate(itemId, { $set: { imageUrl } })
-//     .orFail()
-//     .then((item) => res.status(200).send({ data: item }))
-//     .catch((err) => {
-//       res.status(500).send({ message: "Error from updateItem" });
-//     });
-// };
-
-const deleteItem = (req, res) => {
-  const { itemId } = req.params;
-  return ClothingItem.findByIdAndDelete(itemId)
-    .orFail()
-    .then((item) =>
-      res
-        .status(STATUS_OK)
-        .send({ message: "Item deleted successfully", data: item })
-    )
-    .catch((err) => {
-      if (err.name === "DocumentNotFoundError") {
-        return res.status(STATUS_NOT_FOUND).send({ message: "Item not found" });
-      }
-      if (err.name === "CastError") {
-        return res
-          .status(STATUS_BAD_REQUEST)
-          .send({ message: "Invalid item ID" });
-      }
-      return res
-        .status(STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: "Error from deleteItem" });
-    });
-};
-
 module.exports = {
   createItem,
   getItems,
-  // updateItem,
   deleteItem,
   likeItem,
   unlikeItem,
