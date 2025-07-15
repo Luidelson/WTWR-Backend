@@ -1,14 +1,16 @@
-const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
 
-const STATUS_NOT_FOUND = 404;
-const STATUS_BAD_REQUEST = 400;
-const STATUS_INTERNAL_SERVER_ERROR = 500;
-const STATUS_CREATED = 201;
-const STATUS_OK = 200;
-const STATUS_CONFLICT = 409;
+const {
+  STATUS_NOT_FOUND,
+  STATUS_BAD_REQUEST,
+  STATUS_INTERNAL_SERVER_ERROR,
+  STATUS_CREATED,
+  STATUS_OK,
+  STATUS_CONFLICT,
+} = require("../utils/constants");
 
 // GET /users
 const getUsers = (req, res) => {

@@ -1,4 +1,3 @@
-console.error("hello");
 // allow _id variable in project file
 
 module.exports = {
