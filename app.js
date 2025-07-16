@@ -5,7 +5,6 @@ const mongoose = require("mongoose");
 const app = express();
 
 const { PORT = 3001 } = process.env;
-const auth = require("./middlewares/auth");
 const userRouter = require("./routes/users");
 const itemRouter = require("./routes/clothingItems");
 
@@ -25,11 +24,14 @@ app.post("/signup", require("./controllers/users").createUser);
 app.get("/items", require("./controllers/clothingItems").getItems);
 
 // Protect all routes below this line
-app.use(auth);
 
 // Protected routes
 app.use("/users", userRouter);
 app.use("/items", itemRouter);
+
+app.use((req, res) => {
+  res.status(404).send({ message: "Requested resource not found" });
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

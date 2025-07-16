@@ -13,16 +13,16 @@ const {
 } = require("../utils/constants");
 
 // GET /users
-const getUsers = (req, res) => {
-  User.find({})
-    .then((users) => res.status(STATUS_OK).send(users))
-    .catch((err) => {
-      console.error(err);
-      res
-        .status(STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: "an Error occured in the server." });
-    });
-};
+// const getUsers = (req, res) => {
+//   User.find({})
+//     .then((users) => res.status(STATUS_OK).send(users))
+//     .catch((err) => {
+//       console.error(err);
+//       res
+//         .status(STATUS_INTERNAL_SERVER_ERROR)
+//         .send({ message: "an Error occured in the server." });
+//     });
+// };
 
 // POST /signup
 const createUser = (req, res) => {
@@ -112,12 +112,12 @@ const login = (req, res) => {
       res.status(STATUS_OK).send({ token });
     })
     .catch(() => {
-      res.status(401).send({ message: "Incorrect email or password" });
+      res.status(400).send({ message: "Incorrect email or password" });
     });
 };
 
 module.exports = {
-  getUsers,
+  // getUsers,
   createUser,
   getCurrentUser,
   updateCurrentUser,
