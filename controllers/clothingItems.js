@@ -5,6 +5,7 @@ const {
   STATUS_BAD_REQUEST,
   STATUS_INTERNAL_SERVER_ERROR,
   STATUS_OK,
+  FORBIDDEN,
 } = require("../utils/constants");
 
 const createItem = (req, res) => {
@@ -46,7 +47,7 @@ const deleteItem = (req, res) => {
       // Check if the current user is the owner
       if (item.owner.toString() !== userId) {
         return res
-          .status(403)
+          .status(FORBIDDEN)
           .send({ message: "You are not allowed to delete this item" });
       }
       return ClothingItem.findByIdAndDelete(itemId).then((deletedItem) =>

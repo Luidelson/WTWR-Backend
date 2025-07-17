@@ -12,18 +12,6 @@ const {
   STATUS_CONFLICT,
 } = require("../utils/constants");
 
-// GET /users
-// const getUsers = (req, res) => {
-//   User.find({})
-//     .then((users) => res.status(STATUS_OK).send(users))
-//     .catch((err) => {
-//       console.error(err);
-//       res
-//         .status(STATUS_INTERNAL_SERVER_ERROR)
-//         .send({ message: "an Error occured in the server." });
-//     });
-// };
-
 // POST /signup
 const createUser = (req, res) => {
   const { name, avatar, email, password } = req.body;
@@ -103,6 +91,14 @@ const updateCurrentUser = (req, res) => {
 const login = (req, res) => {
   const { email, password } = req.body;
 
+  // Scenario 1: Check if email or password is missing
+  if (!email || !password) {
+    return res
+      .status(STATUS_BAD_REQUEST)
+      .send({ message: "Email and password are required" });
+  }
+
+  // Scenario 2: Both email and password provided, but they might be incorrect
   return User.findUserByCredentials(email, password)
     .then((user) => {
       // Create JWT with only _id in the payload, expires in 7 days
@@ -111,8 +107,17 @@ const login = (req, res) => {
       });
       res.status(STATUS_OK).send({ token });
     })
-    .catch(() => {
-      res.status(400).send({ message: "Incorrect email or password" });
+    .catch((err) => {
+      // Check if the error is specifically about incorrect credentials
+      if (err.message === "Incorrect email or password") {
+        return res
+          .status(UNAUTHORIZED)
+          .send({ message: "Incorrect email or password" });
+      }
+      // Fallback for any other unexpected errors (database, bcrypt, etc.)
+      return res
+        .status(STATUS_INTERNAL_SERVER_ERROR)
+        .send({ message: "An error occurred on the server" });
     });
 };
 

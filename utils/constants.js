@@ -4,6 +4,8 @@ const STATUS_INTERNAL_SERVER_ERROR = 500;
 const STATUS_CREATED = 201;
 const STATUS_OK = 200;
 const STATUS_CONFLICT = 409;
+const FORBIDDEN = 403;
+const UNAUTHORIZED = 401;
 
 module.exports = {
   STATUS_NOT_FOUND,
@@ -12,4 +14,6 @@ module.exports = {
   STATUS_CREATED,
   STATUS_OK,
   STATUS_CONFLICT,
+  FORBIDDEN,
+  UNAUTHORIZED,
 };
