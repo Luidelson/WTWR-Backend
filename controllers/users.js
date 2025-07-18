@@ -10,6 +10,7 @@ const {
   STATUS_CREATED,
   STATUS_OK,
   STATUS_CONFLICT,
+  UNAUTHORIZED,
 } = require("../utils/constants");
 
 // POST /signup
