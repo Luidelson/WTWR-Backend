@@ -106,7 +106,12 @@ const login = (req, res) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      res.status(STATUS_OK).send({ token });
+      
+      // Create user object without password
+      const userObj = user.toObject();
+      delete userObj.password;
+      
+      res.status(STATUS_OK).send({ token, user: userObj });
     })
     .catch((err) => {
       // Check if the error is specifically about incorrect credentials

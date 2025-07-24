@@ -7,14 +7,16 @@ const app = express();
 const { PORT = 3001 } = process.env;
 const userRouter = require("./routes/users");
 const itemRouter = require("./routes/clothingItems");
-const STATUS_NOT_FOUND = require("./utils/constants");
+const { STATUS_NOT_FOUND } = require("./utils/constants");
 
 mongoose
   .connect("mongodb://127.0.0.1:27017/wtwr_db")
   .then(() => {
     console.log("Connected to MongoDB");
   })
-  .catch(console.error);
+  .catch((err) => {
+    console.error("MongoDB connection error:", err);
+  });
 
 app.use(express.json());
 app.use(cors());

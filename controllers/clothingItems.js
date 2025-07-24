@@ -13,7 +13,7 @@ const createItem = (req, res) => {
   const owner = req.user._id;
 
   return ClothingItem.create({ name, weather, imageUrl, owner })
-    .then((item) => res.send({ data: item }))
+    .then((item) => res.send(item))
     .catch((err) => {
       if (err.name === "ValidationError") {
         return res
@@ -29,11 +29,17 @@ const createItem = (req, res) => {
 const getItems = (req, res) =>
   ClothingItem.find({})
     .then((items) => res.status(STATUS_OK).send(items))
-    .catch(() =>
-      res
+    .catch((err) => {
+      console.error("Error in getItems:", err);
+      // If it's a connection error, return empty array instead of error
+      if (err.name === "MongooseServerSelectionError") {
+        console.log("Database not available, returning empty items array");
+        return res.status(STATUS_OK).send([]);
+      }
+      return res
         .status(STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: "An error occurred in the server." })
-    );
+        .send({ message: "An error occurred in the server." });
+    });
 
 const deleteItem = (req, res) => {
   const { itemId } = req.params;
