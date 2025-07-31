@@ -2,6 +2,13 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 const { JWT_SECRET } = require("../utils/config");
+const {
+  BadRequestError,
+  UnauthorizedError,
+  NotFoundError,
+  ConflictError,
+  InternalServerError,
+} = require("../utils/errors");
 
 const {
   STATUS_NOT_FOUND,
@@ -14,7 +21,7 @@ const {
 } = require("../utils/constants");
 
 // POST /signup
-const createUser = (req, res) => {
+const createUser = (req, res, next) => {
   const { name, avatar, email, password } = req.body;
 
   bcrypt
@@ -27,21 +34,17 @@ const createUser = (req, res) => {
     })
     .catch((err) => {
       if (err.code === 11000) {
-        return res
-          .status(STATUS_CONFLICT)
-          .send({ message: "Email already exists" });
+        next(new ConflictError("Email already exists"));
+      } else if (err.name === "ValidationError") {
+        next(new BadRequestError("Invalid Data"));
+      } else {
+        next(new InternalServerError("an Error occured in the server."));
       }
-      if (err.name === "ValidationError") {
-        return res.status(STATUS_BAD_REQUEST).send({ message: "Invalid Data" });
-      }
-      return res
-        .status(STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: "an Error occured in the server." });
     });
 };
 
 // GET /users/me
-const getCurrentUser = (req, res) => {
+const getCurrentUser = (req, res, next) => {
   const userId = req.user._id; // Get user ID from JWT payload
 
   User.findById(userId)
@@ -49,21 +52,17 @@ const getCurrentUser = (req, res) => {
     .then((user) => res.status(STATUS_OK).send(user))
     .catch((err) => {
       if (err.name === "DocumentNotFoundError") {
-        return res.status(STATUS_NOT_FOUND).send({ message: "User not found" });
+        next(new NotFoundError("User not found"));
+      } else if (err.name === "CastError") {
+        next(new BadRequestError("Invalid user ID"));
+      } else {
+        next(new InternalServerError("An error occurred in the server."));
       }
-      if (err.name === "CastError") {
-        return res
-          .status(STATUS_BAD_REQUEST)
-          .send({ message: "Invalid user ID" });
-      }
-      return res
-        .status(STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: "An error occurred in the server." });
     });
 };
 
 // PATCH /users/me
-const updateCurrentUser = (req, res) => {
+const updateCurrentUser = (req, res, next) => {
   const userId = req.user._id;
   const { name, avatar } = req.body;
 
@@ -74,29 +73,26 @@ const updateCurrentUser = (req, res) => {
   )
     .then((user) => {
       if (!user) {
-        return res.status(STATUS_NOT_FOUND).send({ message: "User not found" });
+        throw new NotFoundError("User not found");
       }
       return res.status(STATUS_OK).send(user);
     })
     .catch((err) => {
       if (err.name === "ValidationError") {
-        return res.status(STATUS_BAD_REQUEST).send({ message: "Invalid Data" });
+        next(new BadRequestError("Invalid Data"));
+      } else {
+        next(err);
       }
-      return res
-        .status(STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: "An error occurred in the server." });
     });
 };
 
 // POST /signin
-const login = (req, res) => {
+const login = (req, res, next) => {
   const { email, password } = req.body;
 
   // Scenario 1: Check if email or password is missing
   if (!email || !password) {
-    return res
-      .status(STATUS_BAD_REQUEST)
-      .send({ message: "Email and password are required" });
+    return next(new BadRequestError("Email and password are required"));
   }
 
   // Scenario 2: Both email and password provided, but they might be incorrect
@@ -116,14 +112,10 @@ const login = (req, res) => {
     .catch((err) => {
       // Check if the error is specifically about incorrect credentials
       if (err.message === "Incorrect email or password") {
-        return res
-          .status(UNAUTHORIZED)
-          .send({ message: "Incorrect email or password" });
+        next(new UnauthorizedError("Incorrect email or password"));
+      } else {
+        next(new InternalServerError("An error occurred on the server"));
       }
-      // Fallback for any other unexpected errors (database, bcrypt, etc.)
-      return res
-        .status(STATUS_INTERNAL_SERVER_ERROR)
-        .send({ message: "An error occurred on the server" });
     });
 };
 

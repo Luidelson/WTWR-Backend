@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
+const errorHandler = require("./middlewares/errorHandler");
 
 const app = express();
 
@@ -31,6 +32,9 @@ app.get("/items", require("./controllers/clothingItems").getItems);
 // Protected routes
 app.use("/users", userRouter);
 app.use("/items", itemRouter);
+
+// Error handling middleware
+app.use(errorHandler);
 
 app.use((req, res) => {
   res
