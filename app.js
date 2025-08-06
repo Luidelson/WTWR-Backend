@@ -2,6 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 const errorHandler = require("./middlewares/errorHandler");
+const { errors } = require("celebrate");
+const { requestLogger, errorLogger } = require("./middlewares/logger");
+require("dotenv").config();
 
 const app = express();
 
@@ -28,10 +31,14 @@ app.post("/signup", require("./controllers/users").createUser);
 app.get("/items", require("./controllers/clothingItems").getItems);
 
 // Protect all routes below this line
-
+app.use(requestLogger); // Log requests
 // Protected routes
 app.use("/users", userRouter);
 app.use("/items", itemRouter);
+
+app.use(errorLogger); // Log errors
+
+app.use(errors()); // Celebrate error handling
 
 // Error handling middleware
 app.use(errorHandler);
