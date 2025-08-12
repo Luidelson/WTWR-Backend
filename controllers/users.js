@@ -10,15 +10,7 @@ const {
   InternalServerError,
 } = require("../utils/errors");
 
-const {
-  STATUS_NOT_FOUND,
-  STATUS_BAD_REQUEST,
-  STATUS_INTERNAL_SERVER_ERROR,
-  STATUS_CREATED,
-  STATUS_OK,
-  STATUS_CONFLICT,
-  UNAUTHORIZED,
-} = require("../utils/constants");
+const { STATUS_CREATED, STATUS_OK } = require("../utils/constants");
 
 // POST /signup
 const createUser = (req, res, next) => {
@@ -80,8 +72,12 @@ const updateCurrentUser = (req, res, next) => {
     .catch((err) => {
       if (err.name === "ValidationError") {
         next(new BadRequestError("Invalid Data"));
-      } else {
+      } else if (err instanceof NotFoundError) {
         next(err);
+      } else if (err.name === "CastError") {
+        next(new BadRequestError("Invalid user ID"));
+      } else {
+        next(new InternalServerError("Error from updateCurrentUser"));
       }
     });
 };
@@ -102,11 +98,11 @@ const login = (req, res, next) => {
       const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
-      
+
       // Create user object without password
       const userObj = user.toObject();
       delete userObj.password;
-      
+
       res.status(STATUS_OK).send({ token, user: userObj });
     })
     .catch((err) => {

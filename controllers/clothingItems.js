@@ -7,11 +7,7 @@ const {
 } = require("../utils/errors");
 
 const {
-  STATUS_NOT_FOUND,
-  STATUS_BAD_REQUEST,
-  STATUS_INTERNAL_SERVER_ERROR,
   STATUS_OK,
-  FORBIDDEN,
 } = require("../utils/constants");
 
 const createItem = (req, res, next) => {
@@ -29,7 +25,7 @@ const createItem = (req, res, next) => {
     });
 };
 
-const getItems = (req, res, next) =>
+const getItems = (req, res, next) => {
   ClothingItem.find({})
     .then((items) => res.status(STATUS_OK).send(items))
     .catch((err) => {
@@ -39,8 +35,9 @@ const getItems = (req, res, next) =>
         console.log("Database not available, returning empty items array");
         return res.status(STATUS_OK).send([]);
       }
-      next(new InternalServerError("An error occurred in the server."));
+      return next(new InternalServerError("An error occurred in the server."));
     });
+};
 
 const deleteItem = (req, res, next) => {
   const { itemId } = req.params;
@@ -64,8 +61,13 @@ const deleteItem = (req, res, next) => {
     .catch((err) => {
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid item ID"));
-      } else {
+      } else if (
+        err instanceof NotFoundError ||
+        err instanceof ForbiddenError
+      ) {
         next(err);
+      } else {
+        next(new InternalServerError("Error from deleteItem"));
       }
     });
 };
@@ -87,8 +89,10 @@ const likeItem = (req, res, next) => {
     .catch((err) => {
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid item ID"));
-      } else {
+      } else if (err instanceof NotFoundError) {
         next(err);
+      } else {
+        next(new InternalServerError("Error from likeItem"));
       }
     });
 };
@@ -110,8 +114,10 @@ const unlikeItem = (req, res, next) => {
     .catch((err) => {
       if (err.name === "CastError") {
         next(new BadRequestError("Invalid item ID"));
-      } else {
+      } else if (err instanceof NotFoundError) {
         next(err);
+      } else {
+        next(new InternalServerError("Error from unlikeItem"));
       }
     });
 };

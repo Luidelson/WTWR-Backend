@@ -7,6 +7,7 @@ const {
 } = require("../controllers/clothingItems");
 
 const auth = require("../middlewares/auth");
+const { validateCardBody, validateItemId } = require("../middlewares/validation");
 
 const router = express.Router();
 
@@ -14,9 +15,9 @@ const router = express.Router();
 router.use(auth);
 
 // Only protected routes (GET /items is public and handled in app.js)
-router.post("/", createItem);
-router.delete("/:itemId", deleteItem);
-router.put("/:itemId/likes", likeItem);
-router.delete("/:itemId/likes", unlikeItem);
+router.post("/", validateCardBody, createItem);
+router.delete("/:itemId", validateItemId, deleteItem);
+router.put("/:itemId/likes", validateItemId, likeItem);
+router.delete("/:itemId/likes", validateItemId, unlikeItem);
 
 module.exports = router;

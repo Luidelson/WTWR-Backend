@@ -1,6 +1,6 @@
 const { STATUS_INTERNAL_SERVER_ERROR } = require("../utils/constants");
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res) => {
   console.error("Error:", err);
   
   // If error has a status code, use it, otherwise default to 500
