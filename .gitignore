@@ -14,4 +14,9 @@ node_modules
 .idea
 .vscode
 
+# Environment files
 .env
+.env.production
+.env.local
+.env.development
+.env.test

@@ -1,51 +1,10 @@
-/* eslint-disable max-classes-per-file */
-class BadRequestError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 400;
-    this.name = "BadRequestError";
-  }
-}
-
-class UnauthorizedError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 401;
-    this.name = "UnauthorizedError";
-  }
-}
-
-class ForbiddenError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 403;
-    this.name = "ForbiddenError";
-  }
-}
-
-class NotFoundError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 404;
-    this.name = "NotFoundError";
-  }
-}
-
-class ConflictError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 409;
-    this.name = "ConflictError";
-  }
-}
-
-class InternalServerError extends Error {
-  constructor(message) {
-    super(message);
-    this.statusCode = 500;
-    this.name = "InternalServerError";
-  }
-}
+// Re-export all error classes from the errors directory
+const BadRequestError = require('./errors/BadRequestError');
+const UnauthorizedError = require('./errors/UnauthorizedError');
+const ForbiddenError = require('./errors/ForbiddenError');
+const NotFoundError = require('./errors/NotFoundError');
+const ConflictError = require('./errors/ConflictError');
+const InternalServerError = require('./errors/InternalServerError');
 
 module.exports = {
   BadRequestError,

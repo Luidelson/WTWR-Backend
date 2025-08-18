@@ -14,7 +14,7 @@ const router = express.Router();
 // Protect all routes in this router
 router.use(auth);
 
-// Only protected routes (GET /items is public and handled in app.js)
+// Protected routes (note: GET /items is public and handled in app.js)
 router.post("/", validateCardBody, createItem);
 router.delete("/:itemId", validateItemId, deleteItem);
 router.put("/:itemId/likes", validateItemId, likeItem);
