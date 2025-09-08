@@ -37,6 +37,8 @@ app.use(
       "https://www.firstdomain.jumpingcrab.com",
       "http://localhost:3000",
       "http://localhost:5173",
+      "http://127.0.0.1:3000",
+      "http://127.0.0.1:5173",
     ],
     credentials: true,
   })
@@ -64,10 +66,30 @@ app.get("/crash-test", () => {
 app.use("/users", userRouter);
 
 // Protected item routes
-app.post("/items", auth, validateCardBody, require("./controllers/clothingItems").createItem);
-app.delete("/items/:itemId", auth, validateItemId, require("./controllers/clothingItems").deleteItem);
-app.put("/items/:itemId/likes", auth, validateItemId, require("./controllers/clothingItems").likeItem);
-app.delete("/items/:itemId/likes", auth, validateItemId, require("./controllers/clothingItems").unlikeItem);
+app.post(
+  "/items",
+  auth,
+  validateCardBody,
+  require("./controllers/clothingItems").createItem
+);
+app.delete(
+  "/items/:itemId",
+  auth,
+  validateItemId,
+  require("./controllers/clothingItems").deleteItem
+);
+app.put(
+  "/items/:itemId/likes",
+  auth,
+  validateItemId,
+  require("./controllers/clothingItems").likeItem
+);
+app.delete(
+  "/items/:itemId/likes",
+  auth,
+  validateItemId,
+  require("./controllers/clothingItems").unlikeItem
+);
 
 app.use(errors()); // Celebrate error handling
 
