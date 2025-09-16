@@ -1,9 +1,3 @@
-# WTWR (What to Wear?)
-
-Absolutely, Luidelson. Here’s a more natural, conversational version of your WTWR project write-up—something that feels like you’re telling the story behind the app, not just listing features. It keeps the structure but adds warmth, clarity, and personality:
-
----
-
 🧥 WTWR – What To Wear
 
 WTWR is a full-stack web app I built to solve a simple but surprisingly tricky problem: figuring out what to wear based on the weather. The idea came from those mornings where you check the forecast, stare at your closet, and still feel unsure. WTWR takes the guesswork out by combining real-time weather data with your personal wardrobe, offering outfit suggestions that actually make sense.
