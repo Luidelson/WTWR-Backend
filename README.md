@@ -70,6 +70,7 @@ And the best part? It’s just getting started.
 
 Pictures 
 <img width="1763" height="914" alt="image" src="https://github.com/user-attachments/assets/6302c0a3-6dd0-4972-8861-dce30406b58d" />
-![Uploading image.png…]()
+<img width="1757" height="917" alt="image" src="https://github.com/user-attachments/assets/ec8bef8b-88d5-43bf-96be-a43333168de4" />
+
 
 
