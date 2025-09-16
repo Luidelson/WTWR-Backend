@@ -65,3 +65,11 @@ I’m actively working on new features to make WTWR even more helpful:
 WTWR started as a way to combine weather data with fashion logic, and it’s grown into a tool I’m genuinely proud of. It’s clean, intuitive, and solves a real problem that most people face daily. Along the way, I’ve learned a ton about building scalable features, working with APIs, and designing for real users—not just developers.
 
 And the best part? It’s just getting started.
+
+---
+
+Pictures 
+<img width="1763" height="914" alt="image" src="https://github.com/user-attachments/assets/6302c0a3-6dd0-4972-8861-dce30406b58d" />
+![Uploading image.png…]()
+
+
